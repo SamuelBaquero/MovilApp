@@ -15,9 +15,13 @@
         android:background="@color/colorPrimaryLight"
         android:text="@string/titulo_seleccionar_estacion"
         android:textAlignment="center"/>
-
-    <ListView
-        android:id="@+id/station_list">
-    </ListView>
-
+    <ListView android:id="@+id/lista_estaciones"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        />
+    <Button
+        android:id="@+id/confirmar_reserva"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/confirmar_reserva_text"/>
 </TableLayout>
