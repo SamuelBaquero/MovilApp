@@ -55,6 +55,9 @@ public class ReservasActivity extends AppCompatActivity {
     }
 
     protected void reservarMovibus(){
-
+        //Crea el intent
+        Intent intent = new Intent(this, ReservaMovibusActivity.class);
+        intent.putExtra(LoginActivity.USER_EMAIl, email);
+        startActivity(intent);
     }
 }
