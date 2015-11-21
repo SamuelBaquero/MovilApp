@@ -20,4 +20,10 @@
     <!--Strings related to vcub booking-->
     <string name="title_activity_reserva_vcub">Booking a Vcub</string>
     <string name="titulo_seleccionar_estacion">Select a station</string>
+    <string name="confirmar_reserva_text">Confirmar Reserva</string>
+
+
+    <!--Strings related to movibus booking-->
+    <string name="title_activity_reserva_movibus">Reserva Movibus Activity</string>
+    <string name="titulo_pedido_movibus">Pide un Movibus</string>
 </resources>

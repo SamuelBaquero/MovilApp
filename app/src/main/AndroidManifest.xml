@@ -40,6 +40,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="co.edu.uniandes.isis2503.tbc.movilapp.ReservasActivity" />
         </activity>
+        <activity
+            android:name=".ReservaMovibusActivity"
+            android:label="@string/title_activity_reserva_movibus"
+            android:parentActivityName=".ReservasActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="co.edu.uniandes.isis2503.tbc.movilapp.ReservasActivity" />
+        </activity>
     </application>
 
 </manifest>

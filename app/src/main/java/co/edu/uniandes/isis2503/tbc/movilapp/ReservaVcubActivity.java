@@ -1,11 +1,11 @@
 package co.edu.uniandes.isis2503.tbc.movilapp;
-
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,7 +13,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.SimpleCursorAdapter;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,11 +26,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 public class ReservaVcubActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor>{
-
-    //This is the Adapter being used to display the list´s data
-    SimpleCursorAdapter mAdapter;
+    
+    ListView estacionesLV;
+    List<String> estacionesInfo;
+    String selected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,15 +45,29 @@ public class ReservaVcubActivity extends ListActivity implements LoaderManager.L
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return null;
+        setSupportActionBar(toolbar);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, estacionesInfo);
+        estacionesLV = (ListView)findViewById(R.id.lista_estaciones);
+        estacionesLV.setAdapter(adapter);
+        estacionesLV.setOnItemClickListener(
+                new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        selected = (String) parent.getItemAtPosition(position);
+                    }
+                }
+        );
+        //Add Actionlisteners to Buttons
+        Button confirmarReserva= (Button) findViewById(R.id.confirmar_reserva);
+        confirmarReserva.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {metodoTemporal();
+            }
+        });
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    
+    public void metodoTemporal(){
 
     }
 
