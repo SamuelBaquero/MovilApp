@@ -49,6 +49,8 @@ public class ReservaVcubActivity extends AppCompatActivity{
      */
     ReservaVcubTask reservaTask;
 
+    String usuarioVcubs;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,6 +152,14 @@ public class ReservaVcubActivity extends AppCompatActivity{
 
             // This will only happen if there was an error getting or parsing the forecast.
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if (result != null) {
+                usuarioVcubs=result;
+                // New data is back from the server.  Hooray!
+            }
         }
     }
 }
