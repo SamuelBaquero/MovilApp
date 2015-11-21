@@ -28,23 +28,32 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
-public class ReservaVcubActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor>{
-    
+public class ReservaVcubActivity extends AppCompatActivity{
+
+    /**
+     * List view to render info.
+     */
     ListView estacionesLV;
+    /**
+     * TBC available station info
+     * String info, id,name
+     */
     List<String> estacionesInfo;
+    /**
+     * Selected item from list.
+     */
     String selected;
+
+    /**
+     * Variable to follow the task track.
+     */
+    ReservaVcubTask reservaTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reserva_vcub);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //get the station list from the tbc server.
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return null;
         setSupportActionBar(toolbar);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, estacionesInfo);
         estacionesLV = (ListView)findViewById(R.id.lista_estaciones);
@@ -61,14 +70,14 @@ public class ReservaVcubActivity extends ListActivity implements LoaderManager.L
         Button confirmarReserva= (Button) findViewById(R.id.confirmar_reserva);
         confirmarReserva.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {metodoTemporal();
+            public void onClick(View view) {
+                reservaTask = new ReservaVcubTask();
+                String[] temp = selected.split(",");
+                String[] temp2 = {temp[0], temp[1]};
+                reservaTask.execute(temp2);
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    }
-    
-    public void metodoTemporal(){
-
     }
 
     public class ReservaVcubTask extends AsyncTask<String[], Void, String> {
