@@ -7,7 +7,14 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReservasActivity extends AppCompatActivity {
 
@@ -15,6 +22,8 @@ public class ReservasActivity extends AppCompatActivity {
      * Atributos del usuario.
      */
     private String email;
+    //private String userCC;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,12 +31,7 @@ public class ReservasActivity extends AppCompatActivity {
         //Intent management
         Intent intent = getIntent();
         email = intent.getStringExtra(LoginActivity.USER_EMAIl);
-
-        //Content view management
-        setContentView(R.layout.activity_reservas);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //userCC = intent.getStringExtra(LoginActivity.USER_CC);
 
         //Add Actionlisteners to Buttons
         Button reservarVcubButton= (Button) findViewById(R.id.reservar_vcub);
@@ -51,6 +55,7 @@ public class ReservasActivity extends AppCompatActivity {
         //Crea el intent
         Intent intent = new Intent(this, ReservaVcubActivity.class);
         intent.putExtra(LoginActivity.USER_EMAIl, email);
+        //intent.putExtra(LoginActivity.USER_CC, userCC);
         startActivity(intent);
     }
 

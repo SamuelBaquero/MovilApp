@@ -1,6 +1,7 @@
 package co.edu.uniandes.isis2503.tbc.movilapp;
 import android.app.ListActivity;
 import android.app.LoaderManager;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -26,9 +27,22 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ReservaVcubActivity extends AppCompatActivity{
+
+    /**
+     * Context Constants
+     */
+    public static final String USER_VCUBS = "user_vcubs";
+    public static final String USER_STATION = "user_station";
+
+    /**
+     * Users data.
+     */
+    private String usersCC;
+    private String email;
 
     /**
      * List view to render info.
@@ -38,7 +52,7 @@ public class ReservaVcubActivity extends AppCompatActivity{
      * TBC available station info
      * String info, id,name
      */
-    List<String> estacionesInfo;
+    ArrayList<String> estacionesInfo;
     /**
      * Selected item from list.
      */
@@ -49,14 +63,26 @@ public class ReservaVcubActivity extends AppCompatActivity{
      */
     ReservaVcubTask reservaTask;
 
+    /**
+     * Amount of vcubs rented by the actual user.
+     */
     String usuarioVcubs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Intent management.
+        Intent intent = getIntent();
+        usersCC = intent.getStringExtra(LoginActivity.USER_CC);
+        email = intent.getStringExtra(LoginActivity.USER_EMAIl);
+        estacionesInfo = new ArrayList<String>();
+
+        estacionesInfo.add("1,Germania");
         setContentView(R.layout.activity_reserva_vcub);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //Array management for stations.
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, estacionesInfo);
         estacionesLV = (ListView)findViewById(R.id.lista_estaciones);
         estacionesLV.setAdapter(adapter);
@@ -68,6 +94,7 @@ public class ReservaVcubActivity extends AppCompatActivity{
                     }
                 }
         );
+
         //Add Actionlisteners to Buttons
         Button confirmarReserva= (Button) findViewById(R.id.confirmar_reserva);
         confirmarReserva.setOnClickListener(new View.OnClickListener() {
@@ -75,11 +102,14 @@ public class ReservaVcubActivity extends AppCompatActivity{
             public void onClick(View view) {
                 reservaTask = new ReservaVcubTask();
                 String[] temp = selected.split(",");
-                String[] temp2 = {temp[0], temp[1]};
+                String[] temp2 = {temp[0], usersCC};
                 reservaTask.execute(temp2);
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    public void succesfull(){
     }
 
     public class ReservaVcubTask extends AsyncTask<String[], Void, String> {
@@ -158,6 +188,7 @@ public class ReservaVcubActivity extends AppCompatActivity{
         protected void onPostExecute(String result) {
             if (result != null) {
                 usuarioVcubs=result;
+                succesfull();
                 // New data is back from the server.  Hooray!
             }
         }

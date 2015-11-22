@@ -46,9 +46,10 @@ public class LoginActivity extends AppCompatActivity{
     private static final int REQUEST_READ_CONTACTS = 0;
 
     /**
-     * String para identificar el Email del usuario conectado
+     * String para identificar los datos del usuario conectado
      */
     public final static String USER_EMAIl = "co.edu.uniandes.isis2503.tbc.EMAIL";
+    public final static String USER_CC = "co.edu.uniandes.isis2503.tbc.CC";
 
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -288,9 +289,10 @@ public class LoginActivity extends AppCompatActivity{
     /**
      * On successfull login show the next view.
      */
-    public void mostrarReservas(String email){
+    public void mostrarReservas(String email, String cedulaC){
         Intent intent = new Intent(this, ReservasActivity.class);
         intent.putExtra(USER_EMAIl, email);
+        intent.putExtra(USER_CC, cedulaC);
         startActivity(intent);
     }
 
@@ -301,6 +303,7 @@ public class LoginActivity extends AppCompatActivity{
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String mEmail;
+        private String mCC;
         private final String mPassword;
 
         UserLoginTask(String email, String password) {
@@ -327,6 +330,8 @@ public class LoginActivity extends AppCompatActivity{
                 }
             }
 
+            //TODO : get the C.C. of the user.
+            mCC="1017166525";
             // TODO: register the new account here.
             return true;
         }
@@ -337,7 +342,7 @@ public class LoginActivity extends AppCompatActivity{
             showProgress(false);
 
             if (success) {
-                mostrarReservas(mEmail);
+                mostrarReservas(mEmail, mCC);
                 finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));

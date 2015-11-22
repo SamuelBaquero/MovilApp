@@ -18,12 +18,12 @@
     <string name="reservar_movibus">Book a Movibus</string>
 
     <!--Strings related to vcub booking-->
-    <string name="title_activity_reserva_vcub">Booking a Vcub</string>
+    <string name="title_activity_reserva_vcub">Booking Vcubs</string>
     <string name="titulo_seleccionar_estacion">Select a station</string>
-    <string name="confirmar_reserva_text">Confirmar Reserva</string>
+    <string name="confirmar_reserva_text">Confirm Booking</string>
 
 
     <!--Strings related to movibus booking-->
-    <string name="title_activity_reserva_movibus">Reserva Movibus Activity</string>
-    <string name="titulo_pedido_movibus">Pide un Movibus</string>
+    <string name="title_activity_reserva_movibus">Booking Movibus</string>
+    <string name="titulo_pedido_movibus">Book a Movibus</string>
 </resources>
