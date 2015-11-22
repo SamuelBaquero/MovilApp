@@ -3,6 +3,8 @@ package co.edu.uniandes.isis2503.tbc.movilapp;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -196,7 +198,7 @@ public class LoginActivity extends AppCompatActivity{
             // perform the user login attempt.
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            mAuthTask.execute();
         }
 
     }
@@ -317,7 +319,7 @@ public class LoginActivity extends AppCompatActivity{
 
             try {
                 // Simulate network access.
-                Thread.sleep(2000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 return false;
             }
@@ -343,7 +345,6 @@ public class LoginActivity extends AppCompatActivity{
 
             if (success) {
                 mostrarReservas(mEmail, mCC);
-                finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();

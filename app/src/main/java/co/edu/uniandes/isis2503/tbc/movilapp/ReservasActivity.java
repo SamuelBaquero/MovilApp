@@ -1,5 +1,7 @@
 package co.edu.uniandes.isis2503.tbc.movilapp;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -28,30 +30,14 @@ public class ReservasActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_reservas);
         //Intent management
         Intent intent = getIntent();
         email = intent.getStringExtra(LoginActivity.USER_EMAIl);
         //userCC = intent.getStringExtra(LoginActivity.USER_CC);
-
-        //Add Actionlisteners to Buttons
-        Button reservarVcubButton= (Button) findViewById(R.id.reservar_vcub);
-        reservarVcubButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                reservarVcub();
-            }
-        });
-
-        Button reservarMovibusButton= (Button) findViewById(R.id.reservar_movibus);
-        reservarMovibusButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                reservarMovibus();
-            }
-        });
     }
 
-    protected void reservarVcub(){
+    public void reservarVcub(View view){
         //Crea el intent
         Intent intent = new Intent(this, ReservaVcubActivity.class);
         intent.putExtra(LoginActivity.USER_EMAIl, email);
@@ -59,7 +45,7 @@ public class ReservasActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    protected void reservarMovibus(){
+    public void reservarMovibus(View view){
         //Crea el intent
         Intent intent = new Intent(this, ReservaMovibusActivity.class);
         intent.putExtra(LoginActivity.USER_EMAIl, email);
