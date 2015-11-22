@@ -1,6 +1,8 @@
 package co.edu.uniandes.isis2503.tbc.movilapp;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.LoaderManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -25,6 +27,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -77,7 +80,7 @@ public class ReservaVcubActivity extends AppCompatActivity{
         email = intent.getStringExtra(LoginActivity.USER_EMAIl);
         estacionesInfo = new ArrayList<String>();
 
-        estacionesInfo.add("1,Germania");
+        estacionesInfo.add("2,Germania");
         setContentView(R.layout.activity_reserva_vcub);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -100,10 +103,23 @@ public class ReservaVcubActivity extends AppCompatActivity{
         confirmarReserva.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                reservaTask = new ReservaVcubTask();
-                String[] temp = selected.split(",");
-                String[] temp2 = {temp[0], usersCC};
-                reservaTask.execute(temp2);
+                if(selected==null){
+                    AlertDialog alertDialog = new AlertDialog.Builder(ReservaVcubActivity.this).create();
+                    alertDialog.setTitle("Alert");
+                    alertDialog.setMessage("Debes seleccionar una estación");
+                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    alertDialog.show();
+                }
+                else {
+                    reservaTask = new ReservaVcubTask();
+                    reservaTask.execute(selected);
+                }
+
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -112,12 +128,12 @@ public class ReservaVcubActivity extends AppCompatActivity{
     public void succesfull(){
     }
 
-    public class ReservaVcubTask extends AsyncTask<String[], Void, String> {
+    public class ReservaVcubTask extends AsyncTask<String, Void, String> {
 
         private final String LOG_TAG = ReservaVcubTask.class.getSimpleName();
 
         @Override
-        protected String doInBackground(String[]... params) {
+        protected String doInBackground(String... params) {
 
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
@@ -128,11 +144,22 @@ public class ReservaVcubActivity extends AppCompatActivity{
             String userJsonStr = null;
 
             try {
+                if(params.length==0){
+                    return "Hubo un error al reservar";
+                }
+                String p = params[0];
+                Log.e(LOG_TAG, "adsa: " + p);
+                String[] temp = params[0].split(",");
 
-                URL url = new URL("192.168.0.5:9000/"+params[0]+"/usuario/"+params[1]);
+                URL url = new URL("http://192.168.0.5:9000/estacionvcub/"+temp[0]+ "/usuario/2");
 
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("PUT");
+                HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
+                httpCon.setDoOutput(true);
+                httpCon.setRequestMethod("PUT");
+                OutputStreamWriter out = new OutputStreamWriter(
+                        httpCon.getOutputStream());
+                out.write("{}");
+                out.close();
                 urlConnection.connect();
 
                 // Read the input stream into a String
