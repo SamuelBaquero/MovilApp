@@ -14,10 +14,12 @@
         android:id="@+id/reservar_vcub"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/reservar_vcub"/>
+        android:text="@string/reservar_vcub"
+        android:onClick="reservarVcub" />
     <Button
         android:id="@+id/reservar_movibus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/reservar_movibus"/>
+        android:text="@string/reservar_movibus"
+        android:onClick="reservarMovibus" />
 </TableLayout>
