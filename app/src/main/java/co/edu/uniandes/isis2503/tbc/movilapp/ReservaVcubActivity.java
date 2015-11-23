@@ -71,6 +71,11 @@ public class ReservaVcubActivity extends AppCompatActivity{
      */
     String usuarioVcubs;
 
+    /**
+     * Succesful message for a booking activity
+     */
+    String vcubBook;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,7 +84,7 @@ public class ReservaVcubActivity extends AppCompatActivity{
         usersCC = intent.getStringExtra(LoginActivity.USER_CC);
         email = intent.getStringExtra(LoginActivity.USER_EMAIl);
         estacionesInfo = new ArrayList<String>();
-
+        vcubBook = "";
         estacionesInfo.add("2,Germania");
         setContentView(R.layout.activity_reserva_vcub);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -137,7 +142,7 @@ public class ReservaVcubActivity extends AppCompatActivity{
 
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
-            HttpURLConnection urlConnection = null;
+            HttpURLConnection httpCon = null;
             BufferedReader reader = null;
 
             // Will contain the raw JSON response as a string.
@@ -151,43 +156,39 @@ public class ReservaVcubActivity extends AppCompatActivity{
                 Log.e(LOG_TAG, "adsa: " + p);
                 String[] temp = params[0].split(",");
 
-                URL url = new URL("http://192.168.0.5:9000/estacionvcub/"+temp[0]+ "/usuario/2");
+                URL url = new URL("http://172.24.100.35:9000/estacionvcub/"+temp[0]+ "/usuario/"+usersCC);
 
-                HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
+                //Open the http connection with the default URL.
+                httpCon = (HttpURLConnection) url.openConnection();
                 httpCon.setDoOutput(true);
                 httpCon.setRequestMethod("PUT");
                 OutputStreamWriter out = new OutputStreamWriter(
                         httpCon.getOutputStream());
                 out.write("{}");
                 out.close();
-                urlConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    return null;
+                if(httpCon.getResponseCode()!=200){
+                    Log.e(LOG_TAG, "Error in HTTP request: "+httpCon.getResponseCode() +" //  " +httpCon.getResponseMessage());
                 }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-
-                if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
-                    return null;
+                vcubBook += selected.split(",")[1] + ":";
+                BufferedReader buff = new BufferedReader(new InputStreamReader(httpCon.getInputStream()));
+                String output;
+                System.out.println("Output from server .... \n");
+                while((output = buff.readLine())!=null){
+                    String[] at1 = output.split(",");
+                    for (String string : at1) {
+                        String[] at2=string.split(":");
+                        if(at2[0].equals("\"vcubsEnUso\""))
+                            vcubBook += at2[1];
+                    }
+                    Log.e(LOG_TAG, vcubBook);
                 }
-                userJsonStr = buffer.toString();
-
-                Log.v(LOG_TAG, "Forecast string: " + userJsonStr);
+                httpCon.disconnect();
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
-                // to parse it.
                 return null;
             } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
+                if (httpCon != null) {
+                    httpCon.disconnect();
                 }
                 if (reader != null) {
                     try {
@@ -196,15 +197,6 @@ public class ReservaVcubActivity extends AppCompatActivity{
                         Log.e(LOG_TAG, "Error closing stream", e);
                     }
                 }
-            }
-
-            try {
-                JSONObject jsonObject = new JSONObject(userJsonStr);
-                jsonObject.getInt("vcubsEnUso");
-                return "Tienes "+jsonObject.getInt("vcubsEnUso")+" vcubs en uso.";
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, e.getMessage(), e);
-                e.printStackTrace();
             }
 
             // This will only happen if there was an error getting or parsing the forecast.

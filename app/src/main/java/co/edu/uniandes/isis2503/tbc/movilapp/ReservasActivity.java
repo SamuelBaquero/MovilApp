@@ -24,7 +24,7 @@ public class ReservasActivity extends AppCompatActivity {
      * Atributos del usuario.
      */
     private String email;
-    //private String userCC;
+    private String userCC;
 
 
     @Override
@@ -34,14 +34,14 @@ public class ReservasActivity extends AppCompatActivity {
         //Intent management
         Intent intent = getIntent();
         email = intent.getStringExtra(LoginActivity.USER_EMAIl);
-        //userCC = intent.getStringExtra(LoginActivity.USER_CC);
+        userCC = intent.getStringExtra(LoginActivity.USER_CC);
     }
 
     public void reservarVcub(View view){
         //Crea el intent
         Intent intent = new Intent(this, ReservaVcubActivity.class);
         intent.putExtra(LoginActivity.USER_EMAIl, email);
-        //intent.putExtra(LoginActivity.USER_CC, userCC);
+        intent.putExtra(LoginActivity.USER_CC, userCC);
         startActivity(intent);
     }
 
