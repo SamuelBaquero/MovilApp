@@ -1,6 +1,9 @@
 package co.edu.uniandes.isis2503.tbc.movilapp;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.ContentResolver;
@@ -11,7 +14,9 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
@@ -22,7 +27,15 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.json.JSONObject;
 
@@ -32,7 +45,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class ReservaMovibusActivity extends AppCompatActivity implements LocationListener{
+public class ReservaMovibusActivity extends AppCompatActivity implements LocationListener {
 
     /*Para pedir un movibus se envía el id del usuario por parámetro y los datos del pedido como JSON de la siguiente manera
         fecha de ejecucion -fechaEjecucion
@@ -40,6 +53,7 @@ public class ReservaMovibusActivity extends AppCompatActivity implements Locatio
         posicion destino -latitudDestino, longitudDestino
         tiempo estimado como valor predeterminado - tiempoEstimado*/
 
+    solicitarMovibusTask solicitarMovis;
     /**
      * Users data.
      */
@@ -63,6 +77,12 @@ public class ReservaMovibusActivity extends AppCompatActivity implements Locatio
      */
     private boolean getPos;
     private boolean sendReq;
+    private boolean finish;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,16 +110,67 @@ public class ReservaMovibusActivity extends AppCompatActivity implements Locatio
         mRequestMovibusButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendReq=true;
+                sendReq = true;
                 requestMovibus();
             }
         });
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+    }
+
+    /**
+     * Show progress while the stations load.
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    public void showProgress(final boolean show) {
+        final View mProgressView = findViewById(R.id.estaciones_progress);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mProgressView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        } else {
+            // The ViewPropertyAnimator APIs are not available, so simply show
+            // and hide the relevant UI components.
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void requestMovibus() {
-
+        EditText posInic = (EditText) findViewById(R.id.posicion_inicial);
+        String[] positions = posInic.getText().toString().split(",");
+        originLatPos = Double.parseDouble(positions[0]);
+        originLonPos = Double.parseDouble(positions[1]);
+        EditText posDest = (EditText) findViewById(R.id.posicion_destino);
+        String[] destinations = posDest.getText().toString().split(",");
+        destLatPos = Double.parseDouble(destinations[0]);
+        destLonPos = Double.parseDouble(destinations[1]);
+        EditText fech = (EditText) findViewById(R.id.fecha_ejecucion);
+        String[] tiemp = posDest.getText().toString().split(",");
+        reqDate = new Date();
+        predTime = 40;
+        //Execute a task to retrieve stations info
+        finish = false;
+        solicitarMovis = new solicitarMovibusTask();
+        solicitarMovis.execute();
+        showProgress(true);
+        while(!finish){
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                //Do Nothing.
+            }
+        }
+        showProgress(false);
     }
 
     private void getActualPosition() {
@@ -128,10 +199,11 @@ public class ReservaMovibusActivity extends AppCompatActivity implements Locatio
     public void onStatusChanged(String provider, int status, Bundle extras) {
         Log.e("Latitude", "status");
     }
+
     /**
      * On successfull login show the next view.
      */
-    public void mostrarReservas(){
+    public void mostrarReservas() {
         Intent intent = new Intent(this, ReservasActivity.class);
         intent.putExtra(LoginActivity.USER_EMAIl, email);
         intent.putExtra(LoginActivity.USER_CC, usersCC);
@@ -142,7 +214,7 @@ public class ReservaMovibusActivity extends AppCompatActivity implements Locatio
     /**
      * Muestra un mensaje de reserva exitosa, y vuelve a la pantalla de reservas.
      */
-    public void reservaExitosa(){
+    public void reservaExitosa() {
         AlertDialog alertDialog = new AlertDialog.Builder(ReservaMovibusActivity.this).create();
         alertDialog.setTitle("");
         alertDialog.setMessage("Se ha realizado la reserva exitosamente");
@@ -154,6 +226,46 @@ public class ReservaMovibusActivity extends AppCompatActivity implements Locatio
                     }
                 });
         alertDialog.show();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "ReservaMovibus Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://co.edu.uniandes.isis2503.tbc.movilapp/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "ReservaMovibus Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://co.edu.uniandes.isis2503.tbc.movilapp/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
     }
 
 
@@ -173,14 +285,14 @@ public class ReservaMovibusActivity extends AppCompatActivity implements Locatio
             String userJsonStr = null;
 
             try {
-                if(params.length==0){
+                if (params.length == 0) {
                     return "Hubo un error al reservar";
                 }
                 String p = params[0];
                 Log.e(LOG_TAG, "adsa: " + p);
                 String[] temp = params[0].split(",");
 
-                URL url = new URL("http://172.24.100.35:9000/usuario/"+userID+ "/solicitarMovibus/");
+                URL url = new URL("http://172.24.100.35:9000/usuario/" + userID + "/solicitarMovibus/");
 
                 //Open the http connection with the default URL.
                 httpCon = (HttpURLConnection) url.openConnection();
@@ -188,7 +300,7 @@ public class ReservaMovibusActivity extends AppCompatActivity implements Locatio
                 httpCon.setRequestMethod("POST");
                 OutputStreamWriter out = new OutputStreamWriter(
                         httpCon.getOutputStream());
-                JSONObject js   = new JSONObject();
+                JSONObject js = new JSONObject();
 
                 js.put("fechaEjecucion", reqDate);
                 js.put("latitudUsuario", originLatPos);
@@ -198,14 +310,14 @@ public class ReservaMovibusActivity extends AppCompatActivity implements Locatio
                 js.put("tiempoEstimado", predTime);
                 out.write(js.toString());
                 out.close();
-                if(httpCon.getResponseCode()!=200){
-                    Log.e(LOG_TAG, "Error in HTTP request: "+httpCon.getResponseCode() +" //  " +httpCon.getResponseMessage());
+                if (httpCon.getResponseCode() != 200) {
+                    Log.e(LOG_TAG, "Error in HTTP request: " + httpCon.getResponseCode() + " //  " + httpCon.getResponseMessage());
                 }
                 BufferedReader buff = new BufferedReader(new InputStreamReader(httpCon.getInputStream()));
-                String output=buff.readLine();
+                String output = buff.readLine();
                 JSONObject j = new JSONObject(output);
-                JSONObject conductor= j.getJSONObject("conductor");
-                nomCon= conductor.getString("nombre");
+                JSONObject conductor = j.getJSONObject("conductor");
+                nomCon = conductor.getString("nombre");
 
                 httpCon.disconnect();
             } catch (Exception e) {

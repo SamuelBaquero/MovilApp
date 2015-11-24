@@ -107,7 +107,7 @@ public class ReservaVcubActivity extends AppCompatActivity{
         showProgress(true);
         while(!finish){
             try {
-                Thread.sleep(5000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 //Do Nothing.
             }
