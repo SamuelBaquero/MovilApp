@@ -2,10 +2,12 @@ package co.edu.uniandes.isis2503.tbc.movilapp;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.LoaderManager;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 
@@ -62,9 +64,12 @@ public class ReservaVcubActivity extends AppCompatActivity{
     String selected;
 
     /**
-     * Variable to follow the task track.
+     * Variables to follow tasks tracks.
      */
+    ProgressDialog progressBar;
     ReservaVcubTask reservaTask;
+    ConseguirEstaciones estacionesTask;
+    boolean finish;
 
     /**
      * Amount of vcubs rented by the actual user.
@@ -84,12 +89,28 @@ public class ReservaVcubActivity extends AppCompatActivity{
         usersCC = intent.getStringExtra(LoginActivity.USER_CC);
         email = intent.getStringExtra(LoginActivity.USER_EMAIl);
         estacionesInfo = new ArrayList<String>();
+
+        estacionesInfo.add("1,Germania");
+        estacionesInfo.add("2,Suba");
+
         vcubBook = "";
-        estacionesInfo.add("2,Germania");
         setContentView(R.layout.activity_reserva_vcub);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //Execute a task to retrieve stations info
+        finish = false;
+        estacionesTask = new ConseguirEstaciones();
+        estacionesTask.execute();
+        /*progressBar = new ProgressDialog();
+        progressBar.setCancelable(true);
+        progressBar.setMessage("Getting info...");
+        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressBar.show();
+        */
+        while(!finish){
+        }
+        progressBar.dismiss();
         //Array management for stations.
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, estacionesInfo);
         estacionesLV = (ListView)findViewById(R.id.lista_estaciones);
@@ -98,6 +119,7 @@ public class ReservaVcubActivity extends AppCompatActivity{
                 new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        view.setBackgroundColor(Color.BLUE);
                         selected = (String) parent.getItemAtPosition(position);
                     }
                 }
@@ -130,7 +152,73 @@ public class ReservaVcubActivity extends AppCompatActivity{
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+    /**
+     * On successfull login show the next view.
+     */
+    public void mostrarReservas(String email, String cedulaC){
+        Intent intent = new Intent(this, ReservasActivity.class);
+        intent.putExtra(LoginActivity.USER_EMAIl, email);
+        intent.putExtra(LoginActivity.USER_CC, cedulaC);
+        startActivity(intent);
+    }
+
     public void succesfull(){
+    }
+
+
+    public class ConseguirEstaciones extends AsyncTask<String[], Void, String> {
+
+        private final String urlGetEstaciones ="http://172.24.100.49:9000/estacionvcub";
+        private final String LOG_TAG = ConseguirEstaciones.class.getSimpleName();
+
+        @Override
+        protected String doInBackground(String[]... params) {
+
+            HttpURLConnection conn = null;
+            BufferedReader buff = null;
+            try {
+                URL url = new URL(urlGetEstaciones);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setDoOutput(true);
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Accept", "application/json");
+                if (conn.getResponseCode() != 200) {
+                    Log.e(LOG_TAG, "Error in HTTP request: "+conn.getResponseCode() +" //  " +conn.getResponseMessage());
+                }
+                buff = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                String output = buff.readLine();
+                String at1[] = output.split(",");
+                Long idEst = Long.valueOf(0).longValue();
+                String nombEst = "";
+                String estacion = "";
+                for (String string : at1) {
+                    String at2[] = string.split(":");
+                    if ("[{\"id\"".equals(at2[0]))
+                        idEst = Long.valueOf(at2[0]).longValue();
+                    if ("\"nombre\"".equals(at2[0]))
+                        nombEst = at2[0];
+                    if (idEst != 0 && !nombEst.equals("")) {
+                        estacion = idEst + "," + nombEst;
+                        estacionesInfo.add(estacion);
+                    }
+                }
+            } catch (Exception e1) {
+                Log.e(LOG_TAG, "Error closing stream", e1);
+            } finally {
+                finish = true;
+                if (conn != null) {
+                    conn.disconnect();
+                }
+                if(buff != null){
+                    try {
+                        buff.close();
+                    }catch(Exception e){
+                        Log.e(LOG_TAG, "Error closing stream", e);
+                    }
+                }
+            }
+            return null;
+        }
     }
 
     public class ReservaVcubTask extends AsyncTask<String, Void, String> {
@@ -183,6 +271,16 @@ public class ReservaVcubActivity extends AppCompatActivity{
                     Log.e(LOG_TAG, vcubBook);
                 }
                 httpCon.disconnect();
+                AlertDialog alertDialog = new AlertDialog.Builder(ReservaVcubActivity.this).create();
+                alertDialog.setTitle("Alert");
+                alertDialog.setMessage("Debes seleccionar una estación");
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialog.show();
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Error ", e);
                 return null;
@@ -197,6 +295,7 @@ public class ReservaVcubActivity extends AppCompatActivity{
                         Log.e(LOG_TAG, "Error closing stream", e);
                     }
                 }
+                mostrarReservas(email, usersCC);
             }
 
             // This will only happen if there was an error getting or parsing the forecast.

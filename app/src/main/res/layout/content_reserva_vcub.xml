@@ -15,6 +15,10 @@
         android:background="@color/colorPrimaryLight"
         android:text="@string/titulo_seleccionar_estacion"
         android:textAlignment="center"/>
+    <View
+        android:id="@+id/progress_bar"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content" />
     <ListView android:id="@+id/lista_estaciones"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
