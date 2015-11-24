@@ -19,6 +19,7 @@
     <string name="titulo_seleccionar_estacion">Selecciona una Estación</string>
     <string name="book_movibus">Reservar Movibus</string>
     <string name="date_pos_hint">Fecha del servicio</string>
-    <string name="final_pos_hint">Lugar de destino</string>
-    <string name="initial_pos_hint">Lugar de recogida</string>
+    <string name="final_pos_hint">Dirección de destino</string>
+    <string name="initial_pos_hint">Dirección de recogida</string>
+    <string name="get_pos_button">Posición Actual</string>
 </resources>

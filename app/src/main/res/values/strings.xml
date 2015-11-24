@@ -27,7 +27,8 @@
     <string name="title_activity_reserva_movibus">Booking Movibus</string>
     <string name="titulo_pedido_movibus">Book a Movibus</string>
     <string name="book_movibus">Book Movibus</string>
-    <string name="initial_pos_hint">Where are you</string>
-    <string name="final_pos_hint">Where you want to go</string>
+    <string name="initial_pos_hint">Pick up address</string>
+    <string name="final_pos_hint">Destination address</string>
     <string name="date_pos_hint">When do you want to go</string>
+    <string name="get_pos_button">Actual address</string>
 </resources>

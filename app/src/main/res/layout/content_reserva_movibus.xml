@@ -37,17 +37,22 @@
             <android.support.design.widget.TextInputLayout android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView android:id="@+id/posicion_inicial"
+                <EditText android:id="@+id/posicion_inicial"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/initial_pos_hint"/>
 
             </android.support.design.widget.TextInputLayout>
 
+            <Button android:id="@+id/get_position_button" style="?android:textAppearanceSmall"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="16dp" android:text="@string/get_pos_button"
+                android:textStyle="bold" />
+
             <android.support.design.widget.TextInputLayout android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView android:id="@+id/posicion_destino"
+                <EditText android:id="@+id/posicion_destino"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/final_pos_hint"
@@ -58,7 +63,7 @@
             <android.support.design.widget.TextInputLayout android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView android:id="@+id/fecha_ejecucion"
+                <EditText android:id="@+id/fecha_ejecucion"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/date_pos_hint"
