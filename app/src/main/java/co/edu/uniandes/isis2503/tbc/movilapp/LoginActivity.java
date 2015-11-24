@@ -39,6 +39,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -325,6 +326,7 @@ public class LoginActivity extends AppCompatActivity{
             HttpURLConnection conn = null;
             BufferedReader buff = null;
             try {
+
                 URL url = new URL(urlLogin+mPassword+"/login");
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setDoOutput(true);
@@ -334,6 +336,7 @@ public class LoginActivity extends AppCompatActivity{
                     Log.e(LOG_TAG, "Error in HTTP request: " + conn.getResponseCode() + " //  " + conn.getResponseMessage());
                 }
                 buff = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
                 String output=buff.readLine();
                 JSONObject j = new JSONObject(output);
                 Log.e(LOG_TAG, "OUTPUT: "+output);
@@ -356,7 +359,7 @@ public class LoginActivity extends AppCompatActivity{
                     }
                 }
             }
-            mCC=mPassword;
+            mCC="1019099727";
             return true;
         }
 
