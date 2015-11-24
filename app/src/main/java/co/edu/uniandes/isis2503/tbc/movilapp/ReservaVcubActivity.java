@@ -162,9 +162,22 @@ public class ReservaVcubActivity extends AppCompatActivity{
         startActivity(intent);
     }
 
-    public void succesfull(){
+    /**
+     * Muestra un mensaje de reserva exitosa, y vuelve a la pantalla de reservas.
+     */
+    public void reservaExitosa(){
+        AlertDialog alertDialog = new AlertDialog.Builder(ReservaVcubActivity.this).create();
+        alertDialog.setTitle("");
+        alertDialog.setMessage("Se ha realizado la reserva exitosamente");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        mostrarReservas(email, usersCC);
+                    }
+                });
+        alertDialog.show();
     }
-
 
     public class ConseguirEstaciones extends AsyncTask<String[], Void, String> {
 
@@ -271,16 +284,6 @@ public class ReservaVcubActivity extends AppCompatActivity{
                     Log.e(LOG_TAG, vcubBook);
                 }
                 httpCon.disconnect();
-                AlertDialog alertDialog = new AlertDialog.Builder(ReservaVcubActivity.this).create();
-                alertDialog.setTitle("Alert");
-                alertDialog.setMessage("Debes seleccionar una estación");
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                alertDialog.show();
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Error ", e);
                 return null;
@@ -295,7 +298,7 @@ public class ReservaVcubActivity extends AppCompatActivity{
                         Log.e(LOG_TAG, "Error closing stream", e);
                     }
                 }
-                mostrarReservas(email, usersCC);
+                reservaExitosa();
             }
 
             // This will only happen if there was an error getting or parsing the forecast.
@@ -306,7 +309,6 @@ public class ReservaVcubActivity extends AppCompatActivity{
         protected void onPostExecute(String result) {
             if (result != null) {
                 usuarioVcubs=result;
-                succesfull();
                 // New data is back from the server.  Hooray!
             }
         }
