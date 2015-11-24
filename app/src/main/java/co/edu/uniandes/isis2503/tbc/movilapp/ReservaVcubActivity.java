@@ -199,7 +199,7 @@ public class ReservaVcubActivity extends AppCompatActivity{
                 conn.setRequestMethod("GET");
                 conn.setRequestProperty("Accept", "application/json");
                 if (conn.getResponseCode() != 200) {
-                    Log.e(LOG_TAG, "Error in HTTP request: "+conn.getResponseCode() +" //  " +conn.getResponseMessage());
+                       Log.e(LOG_TAG, "Error in HTTP request: "+conn.getResponseCode() +" //  " +conn.getResponseMessage());
                 }
                 buff = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 String output = buff.readLine();
