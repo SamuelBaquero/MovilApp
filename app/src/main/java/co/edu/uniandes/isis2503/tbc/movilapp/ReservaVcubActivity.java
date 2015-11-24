@@ -48,6 +48,7 @@ public class ReservaVcubActivity extends AppCompatActivity{
      */
     private String usersCC;
     private String email;
+    private Long userID;
 
     /**
      * List view to render info.
@@ -88,6 +89,7 @@ public class ReservaVcubActivity extends AppCompatActivity{
         Intent intent = getIntent();
         usersCC = intent.getStringExtra(LoginActivity.USER_CC);
         email = intent.getStringExtra(LoginActivity.USER_EMAIl);
+        userID = intent.getLongExtra(LoginActivity.USER_ID, 0);
         estacionesInfo = new ArrayList<String>();
 
         estacionesInfo.add("1,Germania");
@@ -155,10 +157,11 @@ public class ReservaVcubActivity extends AppCompatActivity{
     /**
      * On successfull login show the next view.
      */
-    public void mostrarReservas(String email, String cedulaC){
+    public void mostrarReservas(){
         Intent intent = new Intent(this, ReservasActivity.class);
         intent.putExtra(LoginActivity.USER_EMAIl, email);
-        intent.putExtra(LoginActivity.USER_CC, cedulaC);
+        intent.putExtra(LoginActivity.USER_CC, usersCC);
+        intent.putExtra(LoginActivity.USER_ID, userID);
         startActivity(intent);
     }
 
@@ -173,7 +176,7 @@ public class ReservaVcubActivity extends AppCompatActivity{
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        mostrarReservas(email, usersCC);
+                        mostrarReservas();
                     }
                 });
         alertDialog.show();

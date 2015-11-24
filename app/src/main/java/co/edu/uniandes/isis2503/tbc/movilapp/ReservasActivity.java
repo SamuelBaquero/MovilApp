@@ -25,6 +25,7 @@ public class ReservasActivity extends AppCompatActivity {
      */
     private String email;
     private String userCC;
+    private Long userID;
 
 
     @Override
@@ -35,6 +36,7 @@ public class ReservasActivity extends AppCompatActivity {
         Intent intent = getIntent();
         email = intent.getStringExtra(LoginActivity.USER_EMAIl);
         userCC = intent.getStringExtra(LoginActivity.USER_CC);
+        userID = intent.getLongExtra(LoginActivity.USER_ID, 0);
     }
 
     public void reservarVcub(View view){
@@ -42,6 +44,7 @@ public class ReservasActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ReservaVcubActivity.class);
         intent.putExtra(LoginActivity.USER_EMAIl, email);
         intent.putExtra(LoginActivity.USER_CC, userCC);
+        intent.putExtra(LoginActivity.USER_ID, userID);
         startActivity(intent);
     }
 
@@ -49,6 +52,8 @@ public class ReservasActivity extends AppCompatActivity {
         //Crea el intent
         Intent intent = new Intent(this, ReservaMovibusActivity.class);
         intent.putExtra(LoginActivity.USER_EMAIl, email);
+        intent.putExtra(LoginActivity.USER_CC, userCC);
+        intent.putExtra(LoginActivity.USER_ID, userID);
         startActivity(intent);
     }
 }

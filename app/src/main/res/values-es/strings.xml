@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MovilApp</string>
+    <string name="action_sign_in">Conectar o Registrarse</string>
+    <string name="action_sign_in_short">Conectar</string>
+    <string name="confirmar_reserva_text">Confirmar Reserva</string>
+    <string name="error_field_required">Datos requeridos</string>
+    <string name="error_incorrect_password">Contraseña incorrecta</string>
+    <string name="error_invalid_email">Dirección de correo electrónico inválida</string>
+    <string name="error_invalid_password">Contraseña muy corta</string>
+    <string name="permission_rationale">"Permiso de acceso a tus contactos, requerido para autocompletar información"</string>
+    <string name="prompt_password">Contraseña (Opcional)</string>
+    <string name="reservar_movibus">Reservar Movibus</string>
+    <string name="reservar_vcub">Reservar Vcub</string>
+    <string name="title_activity_reserva_movibus">Reserva de Movibus</string>
+    <string name="title_activity_reserva_vcub">Reserva de Vcubs</string>
+    <string name="title_activity_reservas">Reservas TBC</string>
+    <string name="titulo_pedido_movibus">Reserva de Movibus</string>
+    <string name="titulo_seleccionar_estacion">Selecciona una Estación</string>
+</resources>
