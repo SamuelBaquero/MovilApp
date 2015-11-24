@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,6 +33,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +54,7 @@ public class LoginActivity extends AppCompatActivity{
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
+    private final String urlGetEstaciones ="http://172.24.100.49:9000/estacionvcub";
 
     /**
      * String para identificar los datos del usuario conectado
@@ -64,6 +73,7 @@ public class LoginActivity extends AppCompatActivity{
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    boolean finish;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -299,6 +309,7 @@ public class LoginActivity extends AppCompatActivity{
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
+        private final String LOG_TAG = UserLoginTask.class.getSimpleName();
         private final String mEmail;
         private String mCC;
         private Long mID;
@@ -312,9 +323,43 @@ public class LoginActivity extends AppCompatActivity{
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
+            HttpURLConnection conn = null;
+            BufferedReader buff = null;
+            try {
+                URL url = new URL(urlGetEstaciones);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setDoOutput(true);
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Accept", "application/json");
 
+                if (conn.getResponseCode() != 200) {
+                    Log.e(LOG_TAG, "Error in HTTP request: " + conn.getResponseCode() + " //  " + conn.getResponseMessage());
+                }
+
+                Long idEst = Long.valueOf(0).longValue();
+                buff = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                String output=buff.readLine();
+                JSONObject j = new JSONObject(output);
+                //Pedido
+                Long idUsuario = j.getLong("id");
+                mID=idUsuario;
+            } catch (Exception e1) {
+                Log.e(LOG_TAG, "Error in HTTP request: ");
+            } finally {
+                finish = true;
+                if (conn != null) {
+                    conn.disconnect();
+                }
+                if(buff != null){
+                    try {
+                        buff.close();
+                    }catch(Exception e){
+                        Log.e(LOG_TAG, "Error in HTTP request: ");
+                    }
+                }
+            }
             //TODO : get the C.C. of the user.
-            mCC="1019099727";
+            mCC=mPassword;
             // TODO: register the new account here.
             return true;
         }
