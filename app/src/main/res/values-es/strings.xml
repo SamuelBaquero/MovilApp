@@ -17,4 +17,8 @@
     <string name="title_activity_reservas">Reservas TBC</string>
     <string name="titulo_pedido_movibus">Reserva de Movibus</string>
     <string name="titulo_seleccionar_estacion">Selecciona una Estación</string>
+    <string name="book_movibus">Reservar Movibus</string>
+    <string name="date_pos_hint">Fecha del servicio</string>
+    <string name="final_pos_hint">Lugar de destino</string>
+    <string name="initial_pos_hint">Lugar de recogida</string>
 </resources>

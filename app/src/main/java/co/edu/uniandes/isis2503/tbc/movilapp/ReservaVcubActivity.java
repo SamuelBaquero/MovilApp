@@ -1,4 +1,7 @@
 package co.edu.uniandes.isis2503.tbc.movilapp;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.LoaderManager;
@@ -11,6 +14,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -67,7 +71,6 @@ public class ReservaVcubActivity extends AppCompatActivity{
     /**
      * Variables to follow tasks tracks.
      */
-    ProgressDialog progressBar;
     ReservaVcubTask reservaTask;
     ConseguirEstaciones estacionesTask;
     boolean finish;
@@ -92,9 +95,6 @@ public class ReservaVcubActivity extends AppCompatActivity{
         userID = intent.getLongExtra(LoginActivity.USER_ID, 0);
         estacionesInfo = new ArrayList<String>();
 
-        estacionesInfo.add("1,Germania");
-        estacionesInfo.add("2,Suba");
-
         vcubBook = "";
         setContentView(R.layout.activity_reserva_vcub);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -104,15 +104,15 @@ public class ReservaVcubActivity extends AppCompatActivity{
         finish = false;
         estacionesTask = new ConseguirEstaciones();
         estacionesTask.execute();
-        /*progressBar = new ProgressDialog();
-        progressBar.setCancelable(true);
-        progressBar.setMessage("Getting info...");
-        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressBar.show();
-        */
+        showProgress(true);
         while(!finish){
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                //Do Nothing.
+            }
         }
-        progressBar.dismiss();
+        showProgress(false);
         //Array management for stations.
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, estacionesInfo);
         estacionesLV = (ListView)findViewById(R.id.lista_estaciones);
@@ -152,6 +152,30 @@ public class ReservaVcubActivity extends AppCompatActivity{
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    /**
+     * Show progress while the stations load.
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    public void showProgress(final boolean show){
+        final View mProgressView = findViewById(R.id.estaciones_progress);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mProgressView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        } else {
+            // The ViewPropertyAnimator APIs are not available, so simply show
+            // and hide the relevant UI components.
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
     }
 
     /**
@@ -201,9 +225,11 @@ public class ReservaVcubActivity extends AppCompatActivity{
                 if (conn.getResponseCode() != 200) {
                        Log.e(LOG_TAG, "Error in HTTP request: "+conn.getResponseCode() +" //  " +conn.getResponseMessage());
                 }
+                Log.e(LOG_TAG, "HTTP REQUEST CODE: "+conn.getResponseCode());
                 buff = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 String output = buff.readLine();
                 String at1[] = output.split(",");
+                Log.e(LOG_TAG, "HTTP OUTPUT: "+output);
                 Long idEst = Long.valueOf(0).longValue();
                 String nombEst = "";
                 String estacion = "";
@@ -216,12 +242,14 @@ public class ReservaVcubActivity extends AppCompatActivity{
                     if (idEst != 0 && !nombEst.equals("")) {
                         estacion = idEst + "," + nombEst;
                         estacionesInfo.add(estacion);
+                        Log.e(LOG_TAG, "ESTACION AÑADIDA: "+estacion);
                     }
                 }
             } catch (Exception e1) {
                 Log.e(LOG_TAG, "Error closing stream", e1);
             } finally {
                 finish = true;
+                Log.e(LOG_TAG, "FINISH: "+finish);
                 if (conn != null) {
                     conn.disconnect();
                 }

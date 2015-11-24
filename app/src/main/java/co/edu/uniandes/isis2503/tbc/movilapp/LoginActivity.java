@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity{
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
-    private final String urlGetEstaciones ="http://172.24.100.49:9000/estacionvcub";
+    private final String urlLogin ="http://172.24.100.35:9000/usuario/";
 
     /**
      * String para identificar los datos del usuario conectado
@@ -322,31 +322,29 @@ public class LoginActivity extends AppCompatActivity{
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
             HttpURLConnection conn = null;
             BufferedReader buff = null;
             try {
-                URL url = new URL(urlGetEstaciones);
+                URL url = new URL(urlLogin+mPassword+"/login");
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setDoOutput(true);
                 conn.setRequestMethod("GET");
-                conn.setRequestProperty("Accept", "application/json");
 
                 if (conn.getResponseCode() != 200) {
                     Log.e(LOG_TAG, "Error in HTTP request: " + conn.getResponseCode() + " //  " + conn.getResponseMessage());
                 }
-
-                Long idEst = Long.valueOf(0).longValue();
                 buff = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 String output=buff.readLine();
                 JSONObject j = new JSONObject(output);
+                Log.e(LOG_TAG, "OUTPUT: "+output);
                 //Pedido
                 Long idUsuario = j.getLong("id");
                 mID=idUsuario;
             } catch (Exception e1) {
-                Log.e(LOG_TAG, "Error in HTTP request: ");
+                Log.e(LOG_TAG, "Error in HTTP request: " + e1.getMessage() + " \n <Stack Trace> \n" + e1.toString());
             } finally {
                 finish = true;
+                Log.e(LOG_TAG, "FINISH: "+finish);
                 if (conn != null) {
                     conn.disconnect();
                 }
@@ -354,13 +352,11 @@ public class LoginActivity extends AppCompatActivity{
                     try {
                         buff.close();
                     }catch(Exception e){
-                        Log.e(LOG_TAG, "Error in HTTP request: ");
+                        Log.e(LOG_TAG, "Error closing Buffered Reader: "+e.getMessage()+"\n<StackTrace>\n"+e);
                     }
                 }
             }
-            //TODO : get the C.C. of the user.
             mCC=mPassword;
-            // TODO: register the new account here.
             return true;
         }
 

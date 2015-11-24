@@ -7,6 +7,9 @@
     tools:showIn="@layout/activity_reserva_vcub"
     tools:context="co.edu.uniandes.isis2503.tbc.movilapp.ReservaVcubActivity">
 
+    <ProgressBar android:id="@+id/estaciones_progress" style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp" android:visibility="gone" />
     <TextView
         android:layout_height="30dp"
         android:layout_width="wrap_content"

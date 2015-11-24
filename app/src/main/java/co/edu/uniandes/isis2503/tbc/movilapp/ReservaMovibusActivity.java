@@ -1,7 +1,10 @@
 package co.edu.uniandes.isis2503.tbc.movilapp;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -35,6 +38,7 @@ public class ReservaMovibusActivity extends AppCompatActivity {
         usersCC = intent.getStringExtra(LoginActivity.USER_CC);
         email = intent.getStringExtra(LoginActivity.USER_EMAIl);
         userID = intent.getLongExtra(LoginActivity.USER_ID, 0);
+        
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
